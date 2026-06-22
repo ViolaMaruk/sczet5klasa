@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szkolny Konkurs Matematyczny - Zestaw Treningowy</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .header-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h1 {
+            text-align: center; color: #2c3e50; border-bottom: 2px solid #3498db;
+            padding-bottom: 10px; margin-top: 0; margin-bottom: 15px;
+        }
+        .description { text-align: center; font-size: 1.1em; color: #555; margin: 0; }
+        
+        .section-header {
+            background: #2c3e50; color: #fff; padding: 15px 20px; 
+            margin-top: 40px; margin-bottom: 10px; border-radius: 8px;
+        }
+        .section-header h2 { margin: 0; font-size: 1.3em; }
+        .section-theory {
+            background: #eec15b3b; border-left: 4px solid #f39c12; 
+            padding: 12px 15px; margin-bottom: 20px; border-radius: 0 8px 8px 0;
+            font-size: 0.95em; color: #444;
+        }
+
+        .task-card {
+            background: #fff; padding: 20px 25px; margin-bottom: 20px;
+            border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-left: 6px solid #3498db; transition: all 0.3s;
+        }
+        .task-card.correct-bg { background-color: #d4edda; border-left-color: #28a745; }
+        .task-card.incorrect-bg { background-color: #f8d7da; border-left-color: #dc3545; }
+        .task-text { font-size: 1.1em; margin-bottom: 15px; }
+        
+        .input-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        input[type="text"] {
+            padding: 10px; font-size: 1em; border: 2px solid #e2e8f0;
+            border-radius: 6px; flex-grow: 1; max-width: 300px; outline: none;
+        }
+        input[type="text"]:focus { border-color: #3498db; }
+        
+        button {
+            background-color: #3498db; color: white; border: none; padding: 10px 20px;
+            font-size: 1em; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        button:hover { background-color: #2980b9; }
+        button.btn-hint { background-color: #f39c12; }
+        button.btn-hint:hover { background-color: #d68910; }
+        button.btn-answer { background-color: #9b59b6; }
+        button.btn-answer:hover { background-color: #8e44ad; }
+        
+        .feedback { font-weight: bold; margin-left: 10px; }
+        .correct { color: #1e8449; }
+        .incorrect { color: #c0392b; }
+        .hint-text { display: none; margin-top: 15px; padding: 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; font-style: italic; color: #856404; border-radius: 0 6px 6px 0; }
+
+        /* MODAL */
+        #start-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; justify-content: center;
+            align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 40px; border-radius: 12px; text-align: center;
+            max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal-content input {
+            width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; text-align: center;
+            font-size: 1.1em; border: 2px solid #e2e8f0; border-radius: 6px;
+        }
+        .modal-content button { width: 100%; font-size: 1.1em; padding: 12px; background-color: #27ae60;}
+        .modal-content button:hover { background-color: #2ecc71;}
+        
+        #app-content { display: none; }
+        
+        .finish-container {
+            text-align: center; background: rgba(255,255,255,0.95); padding: 30px;
+            border-radius: 12px; margin-top: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .btn-finish { background-color: #e74c3c; font-size: 1.2em; padding: 15px 30px; }
+        .btn-finish:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <div id="start-modal">
+        <div class="modal-content">
+            <h2>Witaj! 👋</h2>
+            <p>Przed rozpoczęciem treningu wpisz swoje dane:</p>
+            <input type="text" id="student-name" placeholder="Imię i nazwisko" required>
+            <input type="text" id="student-class" placeholder="Klasa (np. 4A)" required>
+            <button onclick="startTest()">Rozpocznij trening</button>
+            <p id="modal-error" style="color: red; font-size: 0.9em; display: none;">Proszę wypełnić wszystkie pola!</p>
+        </div>
+    </div>
+
+    <div id="app-content">
+        <div class="header-container">
+            <h1>Szkolny Konkurs Matematyczny - Zestaw Treningowy</h1>
+            <p class="description">Rozwiąż zadania krok po kroku od najłatwiejszych do najtrudniejszych. Powodzenia!</p>
+        </div>
+
+        <div id="tasks-container"></div>
+
+        <div class="finish-container">
+            <h2 id="finish-text">Skończyłeś cały trening? Wyślij wyniki do nauczyciela!</h2>
+            <button class="btn-finish" id="btn-submit" onclick="sendResults()">Wyślij wyniki 📧</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStudent = "";
+        let currentClass = "";
+        let resultsData = {}; 
+        let userAttempts = {};
+
+        function startTest() {
+            const nameInput = document.getElementById("student-name").value.trim();
+            const classInput = document.getElementById("student-class").value.trim();
+            
+            if(nameInput === "" || classInput === "") {
+                document.getElementById("modal-error").style.display = "block";
+                return;
+            }
+            
+            currentStudent = nameInput;
+            currentClass = classInput;
+            
+            document.getElementById("start-modal").style.display = "none";
+            document.getElementById("app-content").style.display = "block";
+        }
+
+        const sectionsData = [
+            {
+                title: "Blok 1A: Dodawanie wielocyfrowych liczb",
+                theory: "<b>Wskazówka:</b> Dodawaj liczby starannie, zaczynając od jedności. Pamiętaj o przenoszeniu dziesiątek do wyższego rzędu, jeśli suma cyfr przekracza 9!",
+                tasks: [
+                    { id: 1, text: "Oblicz: 423 + 251 =", hint: "Dodawaj rzędami: 3+1, 2+5, 4+2. Tutaj nie ma przechodzenia przez próg dziesiątkowy.", answers: ["674"] },
+                    { id: 2, text: "Oblicz: 1285 + 3467 =", hint: "Uważaj na jedności (5+7=12) i dziesiątki (8+6+1=15). Pamiętaj o zapisaniu 'dalej'.", answers: ["4752"] },
+                    { id: 3, text: "Oblicz: 8476 + 5938 =", hint: "Tutaj prawie w każdym rzędzie będziesz mieć przekroczenie progu dziesiątkowego.", answers: ["14414"] },
+                    { id: 4, text: "Oblicz: 23456 + 12345 =", hint: "Dodawanie liczb pięciocyfrowych, ale rzędy sumują się bardzo łatwo.", answers: ["35801"] },
+                    { id: 5, text: "Oblicz: 67895 + 45218 =", hint: "Najwyższy poziom trudności: duże liczby i częste przenoszenie wartości.", answers: ["113113"] }
+                ]
+            },
+            {
+                title: "Blok 1B: Odejmowanie z zerami (Przechodzenie przez dziesiątki)",
+                theory: "<b>Wskazówka:</b> Kiedy odejmujesz i musisz 'pożyczyć' od zera, pamiętaj, że to zero zamienia się w 9, a pożyczasz od pierwszej napotkanej cyfry większej od zera!",
+                tasks: [
+                    { id: 6, text: "Oblicz: 703 - 245 =", hint: "Pożycz od 70. Wtedy 70 zamienia się w 69, a nad 3 pojawia się 13.", answers: ["458"] },
+                    { id: 7, text: "Oblicz: 4002 - 1358 =", hint: "Musisz pożyczyć przez dwa zera. Liczba 400 zamieni się w 399, a nad 2 pojawi się 12.", answers: ["2644"] },
+                    { id: 8, text: "Oblicz: 1000 - 374 =", hint: "Klasyczne odejmowanie od okrągłego tysiąca. Wyobraź sobie nad zerami cyfry 9, 9, 10.", answers: ["626"] },
+                    { id: 9, text: "Oblicz: 50003 - 12467 =", hint: "Pięciocyfrowa liczba z trzema zerami w środku. Pożyczasz aż od cyfry 5!", answers: ["37536"] },
+                    { id: 10, text: "Oblicz: 90000 - 43215 =", hint: "Odejmowanie od pełnej dziesiątki tysięcy. Nad zerami pojawiają się kolejno 9, 9, 9, 10.", answers: ["46785"] }
+                ]
+            },
+            {
+                title: "Blok 2A: Mnożenie przez liczbę jednocyfrową",
+                theory: "<b>Wskazówka:</b> Pomnóż każdą cyfrę większej liczby przez cyfrę pojedynczą, zaczynając od końca.",
+                tasks: [
+                    { id: 11, text: "Oblicz: 12 × 3 =", hint: "Pomnóż 10×3 oraz 2×3, a wyniki dodaj do siebie.", answers: ["36"] },
+                    { id: 12, text: "Oblicz: 21 × 4 =", hint: "Proste mnożenie bez przekraczania progów rzędów.", answers: ["84"] },
+                    { id: 13, text: "Oblicz: 15 × 5 =", hint: "5×5=25 (5 zapisujesz, 2 dalej), potem 1×5=5 i dodajesz 2.", answers: ["75"] },
+                    { id: 14, text: "Oblicz: 34 × 6 =", hint: "Pomnóż najpierw 4×6, a potem 30×6.", answers: ["204"] },
+                    { id: 15, text: "Oblicz: 78 × 9 =", hint: "Możesz też pomyśleć: 78 × 10 - 78.", answers: ["702"] }
+                ]
+            },
+            {
+                title: "Blok 2B: Mnożenie trzycyfrowych przez jednocyfrowe",
+                theory: "<b>Wskazówka:</b> Zasada jest taka sama, dochodzi jedynie dodatkowy rząd setek.",
+                tasks: [
+                    { id: 16, text: "Oblicz: 102 × 3 =", hint: "Łatwy przykład, zero w środku bardzo ułatwia sprawę.", answers: ["306"] },
+                    { id: 17, text: "Oblicz: 214 × 2 =", hint: "Pomnóż każdy rząd osobno przez 2.", answers: ["428"] },
+                    { id: 18, text: "Oblicz: 125 × 4 =", hint: "Wskazówka: pomyśl o ćwiartkach z tysiąca lub po prostu mnóż po kolei.", answers: ["500"] },
+                    { id: 19, text: "Oblicz: 321 × 6 =", hint: "Wykonaj mnożenie: 300×6 + 20×6 + 1×6.", answers: ["1926"] },
+                    { id: 20, text: "Oblicz: 487 × 8 =", hint: "Trudniejsze liczby, pamiętaj o dokładnym dodawaniu rzędów 'dalej'.", answers: ["3896"] }
+                ]
+            },
+            {
+                title: "Blok 2C: Mnożenie dwucyfrowych przez dwucyfrowe",
+                theory: "<b>Wskazówka:</b> Przy mnożeniu pisemnym pamiętaj, aby zaczynając mnożenie przez drugą cyfrę (dziesiątki) przesunąć wynik o jedno miejsce w lewo!",
+                tasks: [
+                    { id: 21, text: "Oblicz: 11 × 12 =", hint: "Możesz obliczyć 11×10 + 11×2.", answers: ["132"] },
+                    { id: 22, text: "Oblicz: 23 × 13 =", hint: "Pomnóż najpierw 23×3, potem 23×10 i zsumuj.", answers: ["299"] },
+                    { id: 23, text: "Oblicz: 42 × 21 =", hint: "Wygodnie rozbić na 42×20 + 42×1.", answers: ["882"] },
+                    { id: 24, text: "Oblicz: 35 × 15 =", hint: "Zastosuj tradycyjne mnożenie w słupku.", answers: ["525"] },
+                    { id: 25, text: "Oblicz: 67 × 43 =", hint: "Wymaga skupienia, wysokie cyfry.", answers: ["2881"] }
+                ]
+            },
+            {
+                title: "Blok 2D: Mnożenie trzycyfrowych przez dwucyfrowe",
+                theory: "<b>Wskazówka:</b> Najwyższy poziom mnożenia w tym zestawie. Pilnuj odpowiednich kolumn przy zapisie.",
+                tasks: [
+                    { id: 26, text: "Oblicz: 101 × 11 =", hint: "Mnożenie przez 101 jest bardzo symetryczne.", answers: ["1111"] },
+                    { id: 27, text: "Oblicz: 120 × 13 =", hint: "Możesz pomnożyć 12×13 i na końcu dopisać zero.", answers: ["1560"] },
+                    { id: 28, text: "Oblicz: 213 × 24 =", hint: "Najpierw wykonaj 213×4, potem 213×20.", answers: ["5112"] },
+                    { id: 29, text: "Oblicz: 345 × 15 =", hint: "Skorzystaj z rozbicia lub klasycznego słupka.", answers: ["5175"] },
+                    { id: 30, text: "Oblicz: 528 × 37 =", hint: "Najtrudniejszy przykład z mnożenia. Wykonaj obliczenia na boku.", answers: ["19536"] }
+                ]
+            },
+            {
+                title: "Blok 3: Dzielenie",
+                theory: "<b>Wskazówka:</b> Dzielenie to odwrotność mnożenia. Zastanów się, ile razy dzielnik mieści się w danej liczbie.",
+                tasks: [
+                    { id: 31, text: "Oblicz: 12 ÷ 3 =", hint: "Ile to jest 3 × ... = 12?", answers: ["4"] },
+                    { id: 32, text: "Oblicz: 48 ÷ 4 =", hint: "Podziel 40 na 4 oraz 8 na 4.", answers: ["12"] },
+                    { id: 33, text: "Oblicz: 75 ÷ 5 =", hint: "Pamiętaj, że 50 ÷ 5 = 10, a zostaje jeszcze 25.", answers: ["15"] },
+                    { id: 34, text: "Oblicz: 108 ÷ 9 =", hint: "Wskazówka: 90 ÷ 9 = 10. Ile brakuje?", answers: ["12"] },
+                    { id: 35, text: "Oblicz: 132 ÷ 12 =", hint: "Pomyśl: 12 × 10 = 120. Dodaj jeszcze jedno 12.", answers: ["11"] }
+                ]
+            },
+            {
+                title: "Blok 4A: Ułamki dziesiętne - Dodawanie i odejmowanie",
+                theory: "<b>Wskazówka:</b> Najważniejsza zasada: przecinek musi stać pod przecinkiem! Jeśli liczby mają różną ilość miejsc po przecinku, dopisz zero na końcu.",
+                tasks: [
+                    { id: 36, text: "Oblicz: 0.2 + 0.5 =", hint: "Dodaj części dziesiętne, przecinek zostaje na swoim miejscu.", answers: ["0.7", "0,7"] },
+                    { id: 37, text: "Oblicz: 1.3 + 2.4 =", hint: "Dodaj całości do całości, części dziesiętne do dziesiętnych.", answers: ["3.7", "3,7"] },
+                    { id: 38, text: "Oblicz: 4.6 + 1.8 =", hint: "6 + 8 daje 14, czyli przechodzisz przez próg i zwiększasz całości.", answers: ["6.4", "6,4"] },
+                    { id: 39, text: "Oblicz: 12.5 + 3.25 =", hint: "Dopisz zero pomocnicze: 12.50 + 3.25.", answers: ["15.75", "15,75"] },
+                    { id: 40, text: "Oblicz: 7.85 + 4.19 =", hint: "Zsumuj pisemnie, pamiętając o przecinku w tym samym pionie.", answers: ["12.04", "12,04"] },
+                    { id: 41, text: "Oblicz: 0.9 - 0.4 =", hint: "Zwykłe odejmowanie części dziesiętnych.", answers: ["0.5", "0,5"] },
+                    { id: 42, text: "Oblicz: 3.7 - 1.5 =", hint: "Odejmij rzędami, nie wymaga pożyczania.", answers: ["2.2", "2,2"] },
+                    { id: 43, text: "Oblicz: 5.2 - 2.8 =", hint: "Musisz pożyczyć z całości: traktuj to jak 52 - 28, a potem wstaw przecinek.", answers: ["2.4", "2,4"] },
+                    { id: 44, text: "Oblicz: 10 - 4.3 =", hint: "Przedstaw liczbę 10 jako 10.0 i wykonaj odejmowanie.", answers: ["5.7", "5,7"] },
+                    { id: 45, text: "Oblicz: 8.4 - 2.15 =", hint: "Dopisz niewidzialne zero: zamień działanie na 8.40 - 2.15.", answers: ["6.25", "6,25"] }
+                ]
+            },
+            {
+                title: "Blok 4B: Ułamki dziesiętne - Mnożenie i dzielenie",
+                theory: "<b>Wskazówka:</b> Przy mnożeniu mnóż tak, jakby nie było przecinków, a w wyniku odlicz od końca tyle miejsc, ile miały obie liczby razem. Przy dzieleniu przez ułamek, przesuń przecinek w obu liczbach w prawo.",
+                tasks: [
+                    { id: 46, text: "Oblicz: 0.3 × 3 =", hint: "3 × 3 = 9. Odetnij jedno miejsce po przecinku.", answers: ["0.9", "0,9"] },
+                    { id: 47, text: "Oblicz: 1.2 × 4 =", hint: "12 × 4 = 48. Wstaw przecinek tak, aby było jedno miejsce po przecinku.", answers: ["4.8", "4,8"] },
+                    { id: 48, text: "Oblicz: 2.5 × 0.2 =", hint: "25 × 2 = 50. Obie liczby mają razem dwa miejsca po przecinku, więc odcinasz dwa miejsca.", answers: ["0.5", "0.50", "0,5", "0,50"] },
+                    { id: 49, text: "Oblicz: 1.5 × 1.2 =", hint: "15 × 12 = 180. Odlicz dwa miejsca po przecinku od końca.", answers: ["1.8", "1.80", "1,8", "1,80"] },
+                    { id: 50, text: "Oblicz: 12.4 × 0.15 =", hint: "Pomnóż 124 × 15, a w gotowym wyniku przesuń przecinek o trzy miejsca w lewo.", answers: ["1.86", "1.860", "1,86", "1,860"] },
+                    { id: 51, text: "Oblicz: 0.8 ÷ 2 =", hint: "Podziel 8 na 2 i zachowaj strukturę ułamka.", answers: ["0.4", "0,4"] },
+                    { id: 52, text: "Oblicz: 4.8 ÷ 6 =", hint: "Ponieważ 4 jest mniejsze od 6, wynik zacznie się od '0.'. Dalej podziel 48 na 6.", answers: ["0.8", "0,8"] },
+                    { id: 53, text: "Oblicz: 1.5 ÷ 0.3 =", hint: "Przesuń przecinek w prawo w obu liczbach o jedno miejsce. Otrzymasz łatwe działanie: 15 ÷ 3.", answers: ["5"] },
+                    { id: 54, text: "Oblicz: 12.6 ÷ 3 =", hint: "Podziel najpierw całości (12 ÷ 3), a potem części dziesiętne (6 ÷ 3).", answers: ["4.2", "4,2"] },
+                    { id: 55, text: "Oblicz: 2.5 ÷ 0.05 =", hint: "Przesuń przecinek o dwa miejsca w prawo w obu liczbach: otrzymasz 250 ÷ 5.", answers: ["50"] }
+                ]
+            }
+        ];
+
+        const container = document.getElementById("tasks-container");
+        let totalTasksCount = 0;
+
+        // GENEROWANIE STRUKTURY Z PODZIAŁEM NA BLOKI
+        sectionsData.forEach((section) => {
+            container.innerHTML += `
+                <div class="section-header">
+                    <h2>${section.title}</h2>
+                </div>
+                <div class="section-theory">
+                    ${section.theory}
+                </div>
+            `;
+
+            section.tasks.forEach((task) => {
+                totalTasksCount++;
+                resultsData[task.id] = "Nie rozwiązano"; 
+
+                const answersJson = JSON.stringify(task.answers).replace(/"/g, "'");
+                const firstAnswer = task.answers[0];
+
+                container.innerHTML += `
+                    <div class="task-card" id="card${task.id}">
+                        <div class="task-text"><strong>${task.id}.</strong> ${task.text}</div>
+                        <div class="input-group">
+                            <input type="text" id="input${task.id}" placeholder="Wpisz odpowiedź...">
+                            <button onclick="checkAnswer(${task.id}, 'input${task.id}', 'card${task.id}', 'feedback${task.id}', ${answersJson}, 'btn-answer${task.id}')">Sprawdź</button>
+                            <button class="btn-hint" onclick="document.getElementById('hint${task.id}').style.display='block'">Podpowiedź</button>
+                            
+                            <button class="btn-answer" id="btn-answer${task.id}" style="display: none;" onclick="showAnswer(${task.id}, 'input${task.id}', '${firstAnswer}', 'card${task.id}', 'feedback${task.id}', 'btn-answer${task.id}')">Odpowiedź</button>
+                            
+                            <span id="feedback${task.id}" class="feedback"></span>
+                        </div>
+                        <div id="hint${task.id}" class="hint-text">${task.hint}</div>
+                    </div>
+                `;
+            });
+        });
+
+        function checkAnswer(taskNum, inputId, cardId, feedbackId, correctAnswers, btnAnswerId) {
+            let userInput = document.getElementById(inputId).value;
+            let feedbackEl = document.getElementById(feedbackId);
+            let cardEl = document.getElementById(cardId);
+            let btnAnswer = document.getElementById(btnAnswerId);
+            
+            cardEl.classList.remove("correct-bg", "incorrect-bg");
+
+            let normalized = userInput.replace(/\s+/g, '').toLowerCase().replace(',', '.');
+            if (normalized === "") return (feedbackEl.textContent = "Wpisz odpowiedź!", feedbackEl.className = "feedback incorrect");
+
+            if (userAttempts[inputId] === undefined) userAttempts[inputId] = new Set();
+
+            let isCorrect = correctAnswers.some(ans => ans.toLowerCase() === normalized || ans.toLowerCase().replace('.', ',') === normalized.replace('.', ','));
+
+            if (isCorrect) {
+                feedbackEl.textContent = "Dobrze!"; 
+                feedbackEl.className = "feedback correct"; 
+                cardEl.classList.add("correct-bg");
+                btnAnswer.style.display = "none";
+                
+                if(resultsData[taskNum] !== "Podglądał odpowiedź") {
+                    resultsData[taskNum] = "Samodzielnie";
+                }
+            } else {
+                if (userAttempts[inputId].has(userInput)) {
+                    feedbackEl.textContent = "Już podałeś taką odpowiedź. Spróbuj inną!";
+                } else {
+                    userAttempts[inputId].add(userInput);
+                    feedbackEl.textContent = "Spróbuj jeszcze raz.";
+                }
+                feedbackEl.className = "feedback incorrect"; 
+                cardEl.classList.add("incorrect-bg");
+                
+                if (userAttempts[inputId].size >= 2) {
+                    btnAnswer.style.display = "inline-block";
+                }
+            }
+        }
+
+        function showAnswer(taskNum, inputId, correctAnswer, cardId, feedbackId, btnAnswerId) {
+            document.getElementById(inputId).value = correctAnswer;
+            document.getElementById(cardId).classList.remove("incorrect-bg");
+            document.getElementById(cardId).classList.add("correct-bg");
+            document.getElementById(feedbackId).innerHTML = "Oto prawidłowa odpowiedź!";
+            document.getElementById(feedbackId).className = "feedback correct";
+            document.getElementById(btnAnswerId).style.display = "none";
+            
+            resultsData[taskNum] = "Podglądał odpowiedź";
+        }
+
+        function sendResults() {
+            let correctCount = 0; let hintCount = 0; let notSolvedCount = 0;
+            let detailedReport = "";
+
+            for(let i=1; i<=totalTasksCount; i++) {
+                let inputId = 'input' + i;
+                let currentInputVal = document.getElementById(inputId).value.trim();
+                let attemptsSet = userAttempts[inputId];
+                let wrongAttemptsString = (attemptsSet && attemptsSet.size > 0) ? Array.from(attemptsSet).join(", ") : "";
+
+                if(resultsData[i] === "Samodzielnie") {
+                    correctCount++;
+                    if (wrongAttemptsString !== "") {
+                        detailedReport += `Zadanie ${i}: Samodzielnie (Błędy przed sukcesem: ${wrongAttemptsString} | Odpowiedź końcowa: ${currentInputVal})\n`;
+                    } else {
+                        detailedReport += `Zadanie ${i}: Samodzielnie (Odpowiedź: ${currentInputVal})\n`;
+                    }
+                }
+                else if(resultsData[i] === "Podglądał odpowiedź") {
+                    hintCount++;
+                    detailedReport += `Zadanie ${i}: Podglądał odpowiedź (Błędne próby ucznia: ${wrongAttemptsString || "brak, od razu nacisnął podpowiedź"})\n`;
+                }
+                else {
+                    notSolvedCount++;
+                    if (wrongAttemptsString !== "") {
+                        detailedReport += `Zadanie ${i}: Nie rozwiązano (Błędne próby: ${wrongAttemptsString})\n`;
+                    } else {
+                        detailedReport += `Zadanie ${i}: Nie rozwiązano (Pole puste)\n`;
+                    }
+                }
+            }
+
+            const finalMessage = `Uczeń: ${currentStudent}\nKlasa: ${currentClass}\n\nWYNIK GŁÓWNY:\n- Rozwiązane samodzielnie: ${correctCount} z ${totalTasksCount}\n- Z użyciem gotowej odpowiedzi: ${hintCount} z ${totalTasksCount}\n- Brak odpowiedzi: ${notSolvedCount} z ${totalTasksCount}\n\nSZCZEGÓŁY:\n${detailedReport}`;
+
+            const btnSubmit = document.getElementById("btn-submit");
+            btnSubmit.textContent = "Wysyłanie...";
+            btnSubmit.style.backgroundColor = "#7f8c8d";
+            btnSubmit.disabled = true;
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    access_key: "99356b6c-ab77-4ea0-a3cb-99560d40fafa",
+                    subject: `Wyniki treningu matematycznego: ${currentStudent} (${currentClass})`,
+                    from_name: "Trener Matematyczny",
+                    message: finalMessage
+                })
+            })
+            .then(async (response) => {
+                if (response.status == 200) {
+                    document.getElementById("finish-text").innerText = "Udało się! Wyniki przygotowania zostały wysłane do nauczyciela. Możesz zamknąć stronę.";
+                    btnSubmit.style.display = "none";
+                } else {
+                    document.getElementById("finish-text").innerText = "Błąd wysyłania. Zgłoś to nauczycielowi.";
+                    btnSubmit.textContent = "Spróbuj ponownie";
+                    btnSubmit.disabled = false;
+                    btnSubmit.style.backgroundColor = "#e74c3c";
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                document.getElementById("finish-text").innerText = "Błąd połączenia. Sprawdź internet i spróbuj ponownie.";
+                btnSubmit.textContent = "Wyślij ponownie";
+                btnSubmit.disabled = false;
+                btnSubmit.style.backgroundColor = "#e74c3c";
+            });
+        }
+    </script>
+</body>
+</html>
