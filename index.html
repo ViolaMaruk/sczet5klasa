@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Szkolny Konkurs Matematyczny - Zestaw Treningowy</title>
+    <title>Szkolny Konkurs Matematyczny - Wielki Trening Finałowy</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -102,8 +102,8 @@
         <div class="modal-content">
             <h2>Witaj! 👋</h2>
             <p>Przed rozpoczęciem treningu wpisz swoje dane:</p>
-            <input type="text" id="student-name" placeholder="Imię i nazwisko" required>
-            <input type="text" id="student-class" placeholder="Klasa (np. 4A)" required>
+            <input type="text" id="student-name" placeholder="Imię i nazwisko" required onkeydown="if(event.key === 'Enter') startTest()">
+            <input type="text" id="student-class" placeholder="Klasa (np. 5A)" required onkeydown="if(event.key === 'Enter') startTest()">
             <button onclick="startTest()">Rozpocznij trening</button>
             <p id="modal-error" style="color: red; font-size: 0.9em; display: none;">Proszę wypełnić wszystkie pola!</p>
         </div>
@@ -111,8 +111,8 @@
 
     <div id="app-content">
         <div class="header-container">
-            <h1>Szkolny Konkurs Matematyczny - Zestaw Treningowy</h1>
-            <p class="description">Rozwiąż zadania krok po kroku od najłatwiejszych do najtrudniejszych. Powodzenia!</p>
+            <h1>Szkolny Konkurs Matematyczny</h1>
+            <p class="description">Rozwiąż zadania przygotowawcze z matematyki. Możesz zatwierdzić odpowiedź klikając 'Sprawdź' lub naciskając klawisz <b>Enter</b>!</p>
         </div>
 
         <div id="tasks-container"></div>
@@ -147,112 +147,63 @@
 
         const sectionsData = [
             {
-                title: "Blok 1A: Dodawanie wielocyfrowych liczb",
-                theory: "<b>Wskazówka:</b> Dodawaj liczby starannie, zaczynając od jedności. Pamiętaj o przenoszeniu dziesiątek do wyższego rzędu, jeśli suma cyfr przekracza 9!",
+                title: "Blok 1: Rachunki pisemne na liczbach naturalnych (Powtórzenie)",
+                theory: "<b>Ważne:</b> Przy mnożeniu pisemnym pamiętaj o odpowiednim przesuwaniu kolejnych rzędów cyfr w lewo. Przy dzieleniu uważaj na zera pojawiające się w środku wyniku oraz dokładnie zapisuj resztę, jeśli występuje.",
                 tasks: [
-                    { id: 1, text: "Oblicz: 423 + 251 =", hint: "Dodawaj rzędami: 3+1, 2+5, 4+2. Tutaj nie ma przechodzenia przez próg dziesiątkowy.", answers: ["674"] },
-                    { id: 2, text: "Oblicz: 1285 + 3467 =", hint: "Uważaj na jedności (5+7=12) i dziesiątki (8+6+1=15). Pamiętaj o zapisaniu 'dalej'.", answers: ["4752"] },
-                    { id: 3, text: "Oblicz: 8476 + 5938 =", hint: "Tutaj prawie w każdym rzędzie będziesz mieć przekroczenie progu dziesiątkowego.", answers: ["14414"] },
-                    { id: 4, text: "Oblicz: 23456 + 12345 =", hint: "Dodawanie liczb pięciocyfrowych, ale rzędy sumują się bardzo łatwo.", answers: ["35801"] },
-                    { id: 5, text: "Oblicz: 67895 + 45218 =", hint: "Najwyższy poziom trudności: duże liczby i częste przenoszenie wartości.", answers: ["113113"] }
+                    { id: 1, text: "Oblicz sposobem pisemnym: $352 \\cdot 6$", hint: "Pomnóż kolejno jedności, dziesiątki i setki przez 6, pamiętając o przenoszeniu dalej.", answers: ["2112"] },
+                    { id: 2, text: "Oblicz sposobem pisemnym: $214 \\cdot 25$", hint: "Najpierw pomnóż 214 przez 5, a w nowym rzędzie poniżej (z przesunięciem o jedno miejsce w lewo) pomnóż 214 przez 2. Na koniec dodaj oba wyniki.", answers: ["5350"] },
+                    { id: 3, text: "Oblicz sposobem pisemnym: $305 \\cdot 47$", hint: "Uważaj na zero w środku liczby 305! Pamiętaj, że $7 \\cdot 0 = 0$, ale musisz dodać cyfrę przeniesioną dalej.", answers: ["14335"] },
+                    { id: 4, text: "Oblicz sposobem pisemnym: $1248 : 3$", hint: "Dziel kolejno od lewej strony. Gdy dzielisz 2 przez 3, pamiętaj o zapisaniu zera w odpowiednim miejscu wyniku przed przejściem do liczby 24.", answers: ["416"] },
+                    { id: 5, text: "Oblicz sposobem pisemnym: $768 : 24$", hint: "Sprawdź najpierw, ile razy liczba 24 mieści się w 76. Zapisz wynik, odejmij, dopisz 8 i dziel dalej.", answers: ["32"] },
+                    { id: 6, text: "Wykonaj dzielenie z resztą: $583 : 6$. Podaj samą wartość reszty!", hint: "Wykonaj pełne dzielenie pisemne. Liczba, która zostanie na samym dole i jest mniejsza od 6, to Twoja reszta.", answers: ["1"] }
                 ]
             },
             {
-                title: "Blok 1B: Odejmowanie z zerami (Przechodzenie przez dziesiątki)",
-                theory: "<b>Wskazówka:</b> Kiedy odejmujesz i musisz 'pożyczyć' od zera, pamiętaj, że to zero zamienia się w 9, a pożyczasz od pierwszej napotkanej cyfry większej od zera!",
+                title: "Blok 2: Dodawanie i odejmowanie ułamków dziesiętnych",
+                theory: "<b>Ważne:</b> Podstawowa zasada to <b>przecinek pod przecinkiem</b>! Jeśli liczby mają różną liczbę cyfr po przecinku, dopisz zera pomocnicze na końcu ułamka (np. $4,3$ zamień na $4,30$).",
                 tasks: [
-                    { id: 6, text: "Oblicz: 703 - 245 =", hint: "Pożycz od 70. Wtedy 70 zamienia się w 69, a nad 3 pojawia się 13.", answers: ["458"] },
-                    { id: 7, text: "Oblicz: 4002 - 1358 =", hint: "Musisz pożyczyć przez dwa zera. Liczba 400 zamieni się w 399, a nad 2 pojawi się 12.", answers: ["2644"] },
-                    { id: 8, text: "Oblicz: 1000 - 374 =", hint: "Klasyczne odejmowanie od okrągłego tysiąca. Wyobraź sobie nad zerami cyfry 9, 9, 10.", answers: ["626"] },
-                    { id: 9, text: "Oblicz: 50003 - 12467 =", hint: "Pięciocyfrowa liczba z trzema zerami w środku. Pożyczasz aż od cyfry 5!", answers: ["37536"] },
-                    { id: 10, text: "Oblicz: 90000 - 43215 =", hint: "Odejmowanie od pełnej dziesiątki tysięcy. Nad zerami pojawiają się kolejno 9, 9, 9, 10.", answers: ["46785"] }
+                    { id: 7, text: "Oblicz sumę liczb: $7,18 + 2,46$", hint: "Podpisz przecinek pod przecinkiem i dodawaj od prawej strony: $8+6=14$ (4 zapisujesz, 1 dalej)...", answers: ["9.64", "9,64"] },
+                    { id: 8, text: "Oblicz pisemnie: $12,8 + 3,45$", hint: "Dopisz zero do pierwszej liczby, aby wyrównać rzędy: $12,80 + 3,45$. Pamiętaj o przecinku pod przecinkiem.", answers: ["16.25", "16,25"] },
+                    { id: 9, text: "Oblicz pisemnie: $18,3 + 0,005$", hint: "Dopisz dwa zera pomocnicze: $18,300 + 0,005$.", answers: ["18.305", "18,305"] },
+                    { id: 10, text: "Oblicz różnicę liczb: $12,45 - 7,89$", hint: "Podpisz równo i odejmuj. Pamiętaj o pożyczaniu od sąsiedniego rzędu, gdy cyfra na górze jest mniejsza niż na dole.", answers: ["4.56", "4,56"] },
+                    { id: 11, text: "Oblicz pisemnie: $5,4 - 2,13$", hint: "Częsta pułapka! Zanim zaczniesz odejmować, dopisz zero: $5,40 - 2,13$. Teraz musisz pożyczyć z rzędu dziesiątych.", answers: ["3.27", "3,27"] },
+                    { id: 12, text: "Oblicz pisemnie: $12 - 4,35$", hint: "Liczbę całkowitą 12 zapisz jako $12,00$ i dopiero wtedy wykonaj odejmowanie pisemne pod przecinkiem.", answers: ["7.65", "7,65"] }
                 ]
             },
             {
-                title: "Blok 2A: Mnożenie przez liczbę jednocyfrową",
-                theory: "<b>Wskazówka:</b> Pomnóż każdą cyfrę większej liczby przez cyfrę pojedynczą, zaczynając od końca.",
+                title: "Blok 3: Mnożenie i dzielenie ułamków dziesiętnych",
+                theory: "<b>Mnożenie:</b> Pomnóż liczby tak, jakby nie miały przecinków. Na koniec policz, ile cyfr po przecinku było łącznie w obu liczbach i odlicz tyle samo miejsc od prawej strony w wyniku.<br><b>Dzielenie:</b> Przesuń przecinek w obu liczbach w prawo o tyle miejsc, by w dzielniku (drugiej liczbie) powstała liczba całkowita.",
                 tasks: [
-                    { id: 11, text: "Oblicz: 12 × 3 =", hint: "Pomnóż 10×3 oraz 2×3, a wyniki dodaj do siebie.", answers: ["36"] },
-                    { id: 12, text: "Oblicz: 21 × 4 =", hint: "Proste mnożenie bez przekraczania progów rzędów.", answers: ["84"] },
-                    { id: 13, text: "Oblicz: 15 × 5 =", hint: "5×5=25 (5 zapisujesz, 2 dalej), potem 1×5=5 i dodajesz 2.", answers: ["75"] },
-                    { id: 14, text: "Oblicz: 34 × 6 =", hint: "Pomnóż najpierw 4×6, a potem 30×6.", answers: ["204"] },
-                    { id: 15, text: "Oblicz: 78 × 9 =", hint: "Możesz też pomyśleć: 78 × 10 - 78.", answers: ["702"] }
+                    { id: 13, text: "Oblicz: $5,12 \\cdot 6$", hint: "Pomnóż $512 \\cdot 6$ w słupek. W otrzymanym wyniku odlicz dwa miejsca od prawej strony i wstaw przecinek.", answers: ["30.72", "30,72"] },
+                    { id: 14, text: "Oblicz: $1,2 \\cdot 2,3$", hint: "Pomnóż pisemnie $12 \\cdot 23$. Ponieważ każda z liczb miała po jednej cyfrze po przecinku, w ostatecznym wyniku odlicz łącznie dwa miejsca od prawej.", answers: ["2.76", "2,76"] },
+                    { id: 15, text: "Oblicz: $0,03 \\cdot 4,2$", hint: "Wykonaj działanie $3 \\cdot 42$. Następnie odlicz od prawej strony aż trzy miejsca po przecinku (w razie potrzeby dopisz zero na początku rezultatu).", answers: ["0.126", "0,126"] },
+                    { id: 16, text: "Oblicz: $12,48 : 4$", hint: "Wykonaj dzielenie tak jak na liczbach naturalnych, a przecinek w wyniku postaw dokładnie nad przecinkiem w dzielonej liczbie.", answers: ["3.12", "3,12"] },
+                    { id: 17, text: "Oblicz: $4,8 : 0,12$", hint: "Przesuń przecinek w obu liczbach o dwa miejsca w prawo. Otrzymasz prostsze działanie do obliczenia: $480 : 12$.", answers: ["40"] },
+                    { id: 18, text: "Oblicz: $0,156 : 0,12$", hint: "Przesuń przecinek w obu liczbach o dwa miejsca w prawo. Otrzymasz łatwiejsze działanie do wykonania pisemnego: $15,6 : 12$.", answers: ["1.3", "1,3"] }
                 ]
             },
             {
-                title: "Blok 2B: Mnożenie trzycyfrowych przez jednocyfrowe",
-                theory: "<b>Wskazówka:</b> Zasada jest taka sama, dochodzi jedynie dodatkowy rząd setek.",
+                title: "Blok 4: Wielostopniowy porządek działań (Kolejność wykonywania działań)",
+                theory: "<b>Kolejność:</b> 1. Działania w nawiasach, 2. Mnożenie i dzielenie (od lewej do prawej), 3. Dodawanie i odejmowanie (od lewej do prawej).",
                 tasks: [
-                    { id: 16, text: "Oblicz: 102 × 3 =", hint: "Łatwy przykład, zero w środku bardzo ułatwia sprawę.", answers: ["306"] },
-                    { id: 17, text: "Oblicz: 214 × 2 =", hint: "Pomnóż każdy rząd osobno przez 2.", answers: ["428"] },
-                    { id: 18, text: "Oblicz: 125 × 4 =", hint: "Wskazówka: pomyśl o ćwiartkach z tysiąca lub po prostu mnóż po kolei.", answers: ["500"] },
-                    { id: 19, text: "Oblicz: 321 × 6 =", hint: "Wykonaj mnożenie: 300×6 + 20×6 + 1×6.", answers: ["1926"] },
-                    { id: 20, text: "Oblicz: 487 × 8 =", hint: "Trudniejsze liczby, pamiętaj o dokładnym dodawaniu rzędów 'dalej'.", answers: ["3896"] }
+                    { id: 19, text: "Oblicz: $48 : 6 \\cdot 2 + (51 - 45) \\cdot 3$", hint: "Najpierw wykonaj nawias ($51-45=6$). Potem od lewej strony: $48:6=8$, następnie $8\\cdot2=16$. Na końcu $16 + (6\\cdot3)$.", answers: ["34"] },
+                    { id: 20, text: "Oblicz z nawiasami kwadratowymi: $100 - [4 \\cdot (23 - 15) - 12]$", hint: "Zacznij od najgłębszego nawiasu: $23-15=8$. Potem wykonaj działania w nawiasie kwadratowym: $4\\cdot8-12$. Na końcu odejmij ten wynik od 100.", answers: ["80"] },
+                    { id: 21, text: "Oblicz: $50 + 5 \\cdot [32 - (4 + 3 \\cdot 6)]$", hint: "Najpierw w wewnętrznym nawiasie wykonaj mnożenie: $3\\cdot6=18$, potem dodaj 4. Odejmij wynik od 32 w nawiasie kwadratowym. Pamiętaj o pierwszeństwie mnożenia przed końcowym dodawaniem!", answers: ["100"] },
+                    { id: 22, text: "Oblicz: $64 : 8 : 2 \\cdot 5 + (33 - 3 \\cdot 9)$", hint: "Najpierw nawias ($33-27$). Po lewej stronie wykonuj dzielenia i mnożenie po kolei od lewej do prawej: najpierw $64:8$, potem wynik przez 2, potem razy 5.", answers: ["26"] },
+                    { id: 23, text: "Oblicz: $[(18 + 22) : 5 \\cdot 3] - 4 \\cdot 4$", hint: "Wewnętrzny nawias to 40. Potem w kwadratowym od lewej strony: $40:5=8$, a następnie $8\\cdot3=24$. Na koniec odejmij $4\\cdot4$.", answers: ["8"] },
+                    { id: 24, text: "Oblicz: $[100 - (5 \\cdot 8 + 20)] : 8 \\cdot 7$", hint: "Najpierw policz nawias wewnętrzny ($40+20=60$). Odejmij od 100. Wynik z nawiasu kwadratowego podziel przez 8, a na koniec pomnóż przez 7.", answers: ["35"] }
                 ]
             },
             {
-                title: "Blok 2C: Mnożenie dwucyfrowych przez dwucyfrowe",
-                theory: "<b>Wskazówka:</b> Przy mnożeniu pisemnym pamiętaj, aby zaczynając mnożenie przez drugą cyfrę (dziesiątki) przesunąć wynik o jedno miejsce w lewo!",
+                title: "Blok 5: Zadania tekstowe i logiczne",
+                theory: "<b>Wskazówka:</b> W zadaniach tekstowych dokładnie rozpisz sobie dane krok po kroku. Przy zadaniach typu 'pomyślałem liczbę' najłatwiej zastosować metodę wykonywania działań w odwrotnej kolejności.",
                 tasks: [
-                    { id: 21, text: "Oblicz: 11 × 12 =", hint: "Możesz obliczyć 11×10 + 11×2.", answers: ["132"] },
-                    { id: 22, text: "Oblicz: 23 × 13 =", hint: "Pomnóż najpierw 23×3, potem 23×10 i zsumuj.", answers: ["299"] },
-                    { id: 23, text: "Oblicz: 42 × 21 =", hint: "Wygodnie rozbić na 42×20 + 42×1.", answers: ["882"] },
-                    { id: 24, text: "Oblicz: 35 × 15 =", hint: "Zastosuj tradycyjne mnożenie w słupku.", answers: ["525"] },
-                    { id: 25, text: "Oblicz: 67 × 43 =", hint: "Wymaga skupienia, wysokie cyfry.", answers: ["2881"] }
-                ]
-            },
-            {
-                title: "Blok 2D: Mnożenie trzycyfrowych przez dwucyfrowe",
-                theory: "<b>Wskazówka:</b> Najwyższy poziom mnożenia w tym zestawie. Pilnuj odpowiednich kolumn przy zapisie.",
-                tasks: [
-                    { id: 26, text: "Oblicz: 101 × 11 =", hint: "Mnożenie przez 101 jest bardzo symetryczne.", answers: ["1111"] },
-                    { id: 27, text: "Oblicz: 120 × 13 =", hint: "Możesz pomnożyć 12×13 i na końcu dopisać zero.", answers: ["1560"] },
-                    { id: 28, text: "Oblicz: 213 × 24 =", hint: "Najpierw wykonaj 213×4, potem 213×20.", answers: ["5112"] },
-                    { id: 29, text: "Oblicz: 345 × 15 =", hint: "Skorzystaj z rozbicia lub klasycznego słupka.", answers: ["5175"] },
-                    { id: 30, text: "Oblicz: 528 × 37 =", hint: "Najtrudniejszy przykład z mnożenia. Wykonaj obliczenia na boku.", answers: ["19536"] }
-                ]
-            },
-            {
-                title: "Blok 3: Dzielenie",
-                theory: "<b>Wskazówka:</b> Dzielenie to odwrotność mnożenia. Zastanów się, ile razy dzielnik mieści się w danej liczbie.",
-                tasks: [
-                    { id: 31, text: "Oblicz: 12 ÷ 3 =", hint: "Ile to jest 3 × ... = 12?", answers: ["4"] },
-                    { id: 32, text: "Oblicz: 48 ÷ 4 =", hint: "Podziel 40 na 4 oraz 8 na 4.", answers: ["12"] },
-                    { id: 33, text: "Oblicz: 75 ÷ 5 =", hint: "Pamiętaj, że 50 ÷ 5 = 10, a zostaje jeszcze 25.", answers: ["15"] },
-                    { id: 34, text: "Oblicz: 108 ÷ 9 =", hint: "Wskazówka: 90 ÷ 9 = 10. Ile brakuje?", answers: ["12"] },
-                    { id: 35, text: "Oblicz: 132 ÷ 12 =", hint: "Pomyśl: 12 × 10 = 120. Dodaj jeszcze jedno 12.", answers: ["11"] }
-                ]
-            },
-            {
-                title: "Blok 4A: Ułamki dziesiętne - Dodawanie i odejmowanie",
-                theory: "<b>Wskazówka:</b> Najważniejsza zasada: przecinek musi stać pod przecinkiem! Jeśli liczby mają różną ilość miejsc po przecinku, dopisz zero na końcu.",
-                tasks: [
-                    { id: 36, text: "Oblicz: 0.2 + 0.5 =", hint: "Dodaj części dziesiętne, przecinek zostaje na swoim miejscu.", answers: ["0.7", "0,7"] },
-                    { id: 37, text: "Oblicz: 1.3 + 2.4 =", hint: "Dodaj całości do całości, części dziesiętne do dziesiętnych.", answers: ["3.7", "3,7"] },
-                    { id: 38, text: "Oblicz: 4.6 + 1.8 =", hint: "6 + 8 daje 14, czyli przechodzisz przez próg i zwiększasz całości.", answers: ["6.4", "6,4"] },
-                    { id: 39, text: "Oblicz: 12.5 + 3.25 =", hint: "Dopisz zero pomocnicze: 12.50 + 3.25.", answers: ["15.75", "15,75"] },
-                    { id: 40, text: "Oblicz: 7.85 + 4.19 =", hint: "Zsumuj pisemnie, pamiętając o przecinku w tym samym pionie.", answers: ["12.04", "12,04"] },
-                    { id: 41, text: "Oblicz: 0.9 - 0.4 =", hint: "Zwykłe odejmowanie części dziesiętnych.", answers: ["0.5", "0,5"] },
-                    { id: 42, text: "Oblicz: 3.7 - 1.5 =", hint: "Odejmij rzędami, nie wymaga pożyczania.", answers: ["2.2", "2,2"] },
-                    { id: 43, text: "Oblicz: 5.2 - 2.8 =", hint: "Musisz pożyczyć z całości: traktuj to jak 52 - 28, a potem wstaw przecinek.", answers: ["2.4", "2,4"] },
-                    { id: 44, text: "Oblicz: 10 - 4.3 =", hint: "Przedstaw liczbę 10 jako 10.0 i wykonaj odejmowanie.", answers: ["5.7", "5,7"] },
-                    { id: 45, text: "Oblicz: 8.4 - 2.15 =", hint: "Dopisz niewidzialne zero: zamień działanie na 8.40 - 2.15.", answers: ["6.25", "6,25"] }
-                ]
-            },
-            {
-                title: "Blok 4B: Ułamki dziesiętne - Mnożenie i dzielenie",
-                theory: "<b>Wskazówka:</b> Przy mnożeniu mnóż tak, jakby nie było przecinków, a w wyniku odlicz od końca tyle miejsc, ile miały obie liczby razem. Przy dzieleniu przez ułamek, przesuń przecinek w obu liczbach w prawo.",
-                tasks: [
-                    { id: 46, text: "Oblicz: 0.3 × 3 =", hint: "3 × 3 = 9. Odetnij jedno miejsce po przecinku.", answers: ["0.9", "0,9"] },
-                    { id: 47, text: "Oblicz: 1.2 × 4 =", hint: "12 × 4 = 48. Wstaw przecinek tak, aby było jedno miejsce po przecinku.", answers: ["4.8", "4,8"] },
-                    { id: 48, text: "Oblicz: 2.5 × 0.2 =", hint: "25 × 2 = 50. Obie liczby mają razem dwa miejsca po przecinku, więc odcinasz dwa miejsca.", answers: ["0.5", "0.50", "0,5", "0,50"] },
-                    { id: 49, text: "Oblicz: 1.5 × 1.2 =", hint: "15 × 12 = 180. Odlicz dwa miejsca po przecinku od końca.", answers: ["1.8", "1.80", "1,8", "1,80"] },
-                    { id: 50, text: "Oblicz: 12.4 × 0.15 =", hint: "Pomnóż 124 × 15, a w gotowym wyniku przesuń przecinek o trzy miejsca w lewo.", answers: ["1.86", "1.860", "1,86", "1,860"] },
-                    { id: 51, text: "Oblicz: 0.8 ÷ 2 =", hint: "Podziel 8 na 2 i zachowaj strukturę ułamka.", answers: ["0.4", "0,4"] },
-                    { id: 52, text: "Oblicz: 4.8 ÷ 6 =", hint: "Ponieważ 4 jest mniejsze od 6, wynik zacznie się od '0.'. Dalej podziel 48 na 6.", answers: ["0.8", "0,8"] },
-                    { id: 53, text: "Oblicz: 1.5 ÷ 0.3 =", hint: "Przesuń przecinek w prawo w obu liczbach o jedno miejsce. Otrzymasz łatwe działanie: 15 ÷ 3.", answers: ["5"] },
-                    { id: 54, text: "Oblicz: 12.6 ÷ 3 =", hint: "Podziel najpierw całości (12 ÷ 3), a potem części dziesiętne (6 ÷ 3).", answers: ["4.2", "4,2"] },
-                    { id: 55, text: "Oblicz: 2.5 ÷ 0.05 =", hint: "Przesuń przecinek o dwa miejsca w prawo w obu liczbach: otrzymasz 250 ÷ 5.", answers: ["50"] }
+                    { id: 25, text: "Do szkolnego schroniska zakupiono 8 paczek karmy dla psów po 5 kg każda oraz 6 paczek karmy dla kotów po 4 kg każda. Całą karmę postanowiono przepakować do mniejszych pojemników o pojemności 8 kg każdy. Ile takich pojemników uda się napełnić w całości?", hint: "Oblicz łączną wagę karmy ($8 \\cdot 5 + 6 \\cdot 4 = 40 + 24 = 64$ kg), a następnie podziel wynik przez pojemność jednego pojemnika (8 kg).", answers: ["8"] },
+                    { id: 26, text: "Pani Barbara kupiła 3 kg jabłek po 4 zł za kilogram oraz 2 kg gruszek. Za wszystko zapłaciła banknotem 50 zł i otrzymała 22 zł reszty. Ile kosztował jeden kilogram gruszek?", hint: "Najpierw oblicz, ile kosztowały całe zakupy ($50 - 22 = 28$ zł). Potem odejmij od tego koszt jabłek ($3 \\cdot 4 = 12$ zł). Otrzymany wynik (cenę za 2 kg gruszek) podziel przez 2.", answers: ["8"] },
+                    { id: 27, text: "Rowerzysta w ciągu pierwszej godziny przejechał 16 km. W ciągu drugiej godziny przejechał o 4 km mniej niż w pierwszej, a w ciągu trzeciej godziny pokonał trasę dwa razy krótszą niż w drugiej. Ile kilometrów przejechał łącznie w ciągu tych trzech godzin?", hint: "Oblicz dystans z drugiej godziny ($16 - 4 = 12$ km), potem z trzeciej ($12 : 2 = 6$ km), a na końcu zsumuj wyniki ze wszystkich trzech godzin.", answers: ["34"] },
+                    { id: 28, text: "Duża beczka zawiera 60 litrów wody, a mała baryłka mieści o 45 litrów mniej. W kanistrze jest 3 razy mniej wody niż w małej baryłce. Ile litrów wody mieści kanister?", hint: "Dowiedz się, ile litrów jest w małej baryłce ($60 - 45 = 15$ l), a następnie podziel ten wynik przez 3.", answers: ["5"] },
+                    { id: 29, text: "Pomyślałem pewną liczbę. Jeśli pomnożę ją przez 6, a od iloczynu odejmę 14, to otrzymam wynik 40. Jaką liczbę pomyślałem?", hint: "Rozwiązuj zadanie od końca, wykonując działania odwrotne: do wyniku 40 dodaj 14 (co da 54), a otrzymaną sumę podziel przez 6.", answers: ["9"] },
+                    { id: 30, text: "Ewa rozłożyła cukierki na 4 talerzyki po 8 sztuk na każdym, ale zostało jej jeszcze 8 cukierków w dłoni. Chciała rozłożyć wszystkie posiadane cukierki tak, aby na każdym talerzyku było ich po równo. Ile cukierków ostatecznie znajdzie się na każdym talerzyku?", hint: "Oblicz całkowitą liczbę cukierków, jakie miała Ewa ($4 \\cdot 8 + 8 = 32 + 8 = 40$). Następnie podziel tę sumę przez 4 talerzyki.", answers: ["10"] }
                 ]
             }
         ];
@@ -282,7 +233,7 @@
                     <div class="task-card" id="card${task.id}">
                         <div class="task-text"><strong>${task.id}.</strong> ${task.text}</div>
                         <div class="input-group">
-                            <input type="text" id="input${task.id}" placeholder="Wpisz odpowiedź...">
+                            <input type="text" id="input${task.id}" placeholder="Wpisz odpowiedź..." onkeydown="if(event.key === 'Enter') checkAnswer(${task.id}, 'input${task.id}', 'card${task.id}', 'feedback${task.id}', ${answersJson}, 'btn-answer${task.id}')">
                             <button onclick="checkAnswer(${task.id}, 'input${task.id}', 'card${task.id}', 'feedback${task.id}', ${answersJson}, 'btn-answer${task.id}')">Sprawdź</button>
                             <button class="btn-hint" onclick="document.getElementById('hint${task.id}').style.display='block'">Podpowiedź</button>
                             
@@ -351,7 +302,9 @@
             let correctCount = 0; let hintCount = 0; let notSolvedCount = 0;
             let detailedReport = "";
 
-            for(let i=1; i<=totalTasksCount; i++) {
+            const activeIds = Object.keys(resultsData).map(Number).sort((a,b)=>a-b);
+
+            activeIds.forEach((i) => {
                 let inputId = 'input' + i;
                 let currentInputVal = document.getElementById(inputId).value.trim();
                 let attemptsSet = userAttempts[inputId];
@@ -377,7 +330,7 @@
                         detailedReport += `Zadanie ${i}: Nie rozwiązano (Pole puste)\n`;
                     }
                 }
-            }
+            });
 
             const finalMessage = `Uczeń: ${currentStudent}\nKlasa: ${currentClass}\n\nWYNIK GŁÓWNY:\n- Rozwiązane samodzielnie: ${correctCount} z ${totalTasksCount}\n- Z użyciem gotowej odpowiedzi: ${hintCount} z ${totalTasksCount}\n- Brak odpowiedzi: ${notSolvedCount} z ${totalTasksCount}\n\nSZCZEGÓŁY:\n${detailedReport}`;
 
@@ -391,7 +344,7 @@
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     access_key: "99356b6c-ab77-4ea0-a3cb-99560d40fafa",
-                    subject: `Wyniki treningu matematycznego: ${currentStudent} (${currentClass})`,
+                    subject: `Wyniki treningu klasa 5: ${currentStudent} (${currentClass})`,
                     from_name: "Trener Matematyczny",
                     message: finalMessage
                 })
